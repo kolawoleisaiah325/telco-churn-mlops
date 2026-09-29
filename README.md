@@ -6,13 +6,14 @@ The project includes a training command, a prediction command, reusable Python m
 
 ## Deployment lesson 1: a running API
 
-`api.py` currently exposes `GET /health`. This checks that the web process can answer an HTTP request; it does not load or test the model yet. `serve.py` starts the server on your computer at `127.0.0.1:8000`. The next lesson will add a prediction endpoint that uses the saved pipeline and threshold.
+`api.py` exposes `GET /health`. This checks that the web process can answer an HTTP request; it does not make a test prediction. `serve.py` starts the server on your computer at `127.0.0.1:8000`.
 
 With this workspace's embedded Python, install the API packages into the project-local `.vendor` directory if they are not already present:
 
 ```powershell
 Set-Location 'C:\Code\Projects\telco-customer-churn'
 & 'C:\Code\Projects\python\python.exe' -m pip install --target .vendor -r requirements-api.txt
+$env:CHURN_MODEL_PATH = (Resolve-Path '.\artifacts\20260923T010434Z-559283dd\churn_model.joblib').Path
 & 'C:\Code\Projects\python\python.exe' .\serve.py
 ```
 
@@ -23,6 +24,22 @@ Invoke-RestMethod http://127.0.0.1:8000/health
 ```
 
 The response is `status: ok`. Press Ctrl+C in the first window to stop the server. The `.vendor` directory is ignored by Git. A normal Python installation should instead use a virtual environment and install both requirements files there.
+
+## Deployment lesson 2: predict through HTTP
+
+With the server running as above, send the JSON example from another PowerShell window:
+
+```powershell
+Set-Location 'C:\Code\Projects\telco-customer-churn'
+$customer = Get-Content .\sample_customer.json -Raw
+Invoke-RestMethod -Method Post -Uri 'http://127.0.0.1:8000/predict' -ContentType 'application/json' -Body $customer
+```
+
+The API accepts one customer with the 19 features in `sample_customer.json`. It returns `customerID`, `churn_score`, `predicted_churn`, `decision_threshold`, and `model_name`. For this sample the score is about `0.754398`, the saved threshold is about `0.325706`, and the decision is `Yes`. This matches the CSV prediction command. The score is not a calibrated probability.
+
+The request moves through four steps: FastAPI checks that the JSON has the expected fields and basic types; the saved pipeline cleans and transforms those fields; XGBoost produces a score; the saved threshold converts the score to `Yes` or `No`. Invalid JSON fields or missing required features receive HTTP 422. Visit `http://127.0.0.1:8000/docs` while the server is running to inspect the interactive API contract.
+
+`CHURN_MODEL_PATH` selects one exact, trusted training run. The API loads that bundle once when the server starts, so every request uses the same model and threshold until the service is restarted. The generated model and source dataset are intentionally absent from GitHub. On a new machine, obtain the dataset, run training, and point `CHURN_MODEL_PATH` at the new run's `churn_model.joblib` before starting the API.
 
 ## Run it
 
