@@ -17,7 +17,7 @@ from pathlib import Path
 from uuid import uuid4
 
 PROJECT_DIR = Path(__file__).resolve().parent
-# The workspace's embedded Python omits the script directory from its import path.
+# Support Python installations that omit the script directory from sys.path.
 if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
 os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_DIR / ".matplotlib"))

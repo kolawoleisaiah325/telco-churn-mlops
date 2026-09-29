@@ -1,0 +1,10 @@
+**
+!Dockerfile
+!requirements-serving.txt
+!api.py
+!churn/
+!churn/**
+!model/
+!model/churn_model.joblib
+**/__pycache__/
+**/*.pyc

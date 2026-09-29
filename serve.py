@@ -1,4 +1,4 @@
-"""Start the API with the embedded Python installation in this workspace."""
+"""Start the API locally on port 8000."""
 
 from pathlib import Path
 import sys

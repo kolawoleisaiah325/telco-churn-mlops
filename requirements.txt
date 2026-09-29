@@ -1,4 +1,4 @@
-# Direct dependencies verified in this workspace (Python 3.12).
+# Direct training dependencies verified with Python 3.12.
 numpy==2.5.3
 pandas==3.0.6
 matplotlib==3.11.2

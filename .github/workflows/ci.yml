@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -t . -v
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t telco-churn-api .
+      - name: Start container
+        run: docker run -d --name churn-api -p 8000:8080 telco-churn-api
+      - name: Smoke test HTTP endpoints
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8000/health; then break; fi
+            sleep 2
+          done
+          curl --fail --silent http://127.0.0.1:8000/health | python -c 'import json,sys; assert json.load(sys.stdin)["status"] == "ok"'
+          curl --fail --silent --show-error -X POST http://127.0.0.1:8000/predict \
+            -H 'Content-Type: application/json' --data-binary @sample_customer.json \
+            | python -c 'import json,sys; p=json.load(sys.stdin); assert p["predicted_churn"] == "Yes" and 0 < p["churn_score"] < 1'
+      - name: Show container logs on failure
+        if: failure()
+        run: docker logs churn-api
