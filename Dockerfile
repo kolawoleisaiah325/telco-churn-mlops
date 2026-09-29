@@ -6,6 +6,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+LABEL org.opencontainers.image.source="https://github.com/kolawoleisaiah325/telco-churn-mlops" \
+      org.opencontainers.image.description="Telco churn prediction API"
+
 # XGBoost uses the OpenMP runtime on Linux.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libgomp1 \

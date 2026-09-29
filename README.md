@@ -9,6 +9,7 @@ An end-to-end machine learning project that predicts customer churn from account
 - **Consistent inference:** the saved bundle contains raw-input cleaning, learned preprocessing, the classifier, and its decision threshold.
 - **Deployable API:** FastAPI validates requests and returns the score, decision, threshold, and model name.
 - **Container verification:** GitHub Actions runs unit tests and builds and smoke-tests the Docker image.
+- **Image publishing:** successful pushes to `main` publish a commit-tagged image to GitHub Container Registry.
 
 ```mermaid
 flowchart LR
@@ -60,6 +61,10 @@ curl -X POST http://127.0.0.1:8000/predict \
 ```
 
 The sample response contains `churn_score` near `0.754398` and `predicted_churn` of `Yes`. The score exceeds the saved threshold. API documentation is available at `http://127.0.0.1:8000/docs` while the container is running. Invalid requests receive HTTP 422.
+
+## Published image
+
+After unit tests and the container smoke test pass, GitHub Actions publishes an image to `ghcr.io/kolawoleisaiah325/telco-churn-mlops:sha-<commit-sha>`. The workflow summary records the image digest. Use the digest (`@sha256:...`) when deploying an exact build, since a tag can be moved. The package is private while this repository is private, so pulling it requires GitHub Packages access.
 
 ## Train and evaluate
 
