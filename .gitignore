@@ -1,0 +1,11 @@
+# Keep source data and generated model outputs out of source control.
+Telco-Customer-Churn.csv
+WA_Fn-UseC_-Telco-Customer-Churn.csv
+artifacts/
+predictions*.csv
+.venv/
+.vendor/
+__pycache__/
+*.py[cod]
+.matplotlib/
+.env
