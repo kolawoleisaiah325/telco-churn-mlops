@@ -27,7 +27,7 @@ jobs:
       - name: Build image
         run: docker build -t telco-churn-api .
       - name: Start container
-        run: docker run -d --name churn-api -p 8000:8080 telco-churn-api
+        run: docker run -d --name churn-api --memory 512m -p 8000:8080 telco-churn-api
       - name: Smoke test HTTP endpoints
         run: |
           for attempt in $(seq 1 30); do

@@ -66,6 +66,12 @@ The sample response contains `churn_score` near `0.754398` and `predicted_churn`
 
 After unit tests and the container smoke test pass, GitHub Actions publishes an image to `ghcr.io/kolawoleisaiah325/telco-churn-mlops:sha-<commit-sha>`. The workflow summary records the image digest. Use the digest (`@sha256:...`) when deploying an exact build, since a tag can be moved. The package is private while this repository is private, so pulling it requires GitHub Packages access.
 
+## Free hosted demo
+
+`render.yaml` defines a Render web service on the **Free** plan. Render builds the Dockerfile from the linked GitHub repository and deploys a commit only after its CI checks pass. The API binds to Render's `PORT` environment variable, and Render probes `/health` before routing traffic. CI also smoke-tests the container with the Free plan's 512 MB memory limit.
+
+To create the service, connect this repository to a Render account, choose **New → Blueprint**, select the repository, and review the plan shown before deploying. Keep the Render account without a payment method if a zero-charge limit is essential: Render states that it suspends Free services or builds at usage limits rather than billing accounts without a payment method. Free services sleep after 15 minutes without requests, so the first request after idle can take about a minute. The hosted URL can be added here after the first deployment.
+
 ## Train and evaluate
 
 The source dataset is IBM's [Telco Customer Churn sample](https://github.com/IBM/telco-customer-churn-on-icp4d/blob/master/data/Telco-Customer-Churn.csv). The expected SHA-256 is `16320c9c1ec72448db59aa0a26a0b95401046bef5d02fd3aeb906448e3055e91`. Download it as `Telco-Customer-Churn.csv` in the project root. The dataset and generated training runs are ignored by Git.

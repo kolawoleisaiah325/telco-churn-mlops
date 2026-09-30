@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: telco-churn-mlops-api
+    runtime: docker
+    plan: free
+    branch: main
+    autoDeployTrigger: checksPass
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
