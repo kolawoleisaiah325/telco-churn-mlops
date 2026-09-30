@@ -68,9 +68,11 @@ After unit tests and the container smoke test pass, GitHub Actions publishes an 
 
 ## Free hosted demo
 
+**Live API:** [telco-churn-mlops-api.onrender.com](https://telco-churn-mlops-api.onrender.com/docs) · [Health check](https://telco-churn-mlops-api.onrender.com/health)
+
 `render.yaml` defines a Render web service on the **Free** plan. Render builds the Dockerfile from the linked GitHub repository and deploys a commit only after its CI checks pass. The API binds to Render's `PORT` environment variable, and Render probes `/health` before routing traffic. CI also smoke-tests the container with the Free plan's 512 MB memory limit.
 
-To create the service, connect this repository to a Render account, choose **New → Blueprint**, select the repository, and review the plan shown before deploying. Keep the Render account without a payment method if a zero-charge limit is essential: Render states that it suspends Free services or builds at usage limits rather than billing accounts without a payment method. Free services sleep after 15 minutes without requests, so the first request after idle can take about a minute. The hosted URL can be added here after the first deployment.
+The live deployment returned HTTP 200 for `/health`, `/docs`, and a sample `/predict` request. The sample prediction was `Yes` with a churn score of `0.754398`, above the saved threshold of `0.325706`. Free services sleep after 15 minutes without requests, so the first request after idle can take about a minute. Keep the Render account without a payment method if a zero-charge limit is essential: Render states that it suspends Free services or builds at usage limits rather than billing accounts without a payment method.
 
 ## Train and evaluate
 
